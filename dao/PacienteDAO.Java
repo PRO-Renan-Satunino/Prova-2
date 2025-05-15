@@ -1,97 +1,43 @@
-public class PacienteDAO  {
-    
+package dao;
+
+import model.Paciente;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PacienteDAO {
+
+    private List<Paciente> pacientes = new ArrayList<>();
+
+    public PacienteDAO(List<Paciente> pacientes) {
+        this.pacientes = pacientes;
+    }
+
     public void inserir(Paciente paciente) {
-        String sql = "INSERT INTO paciente (nome, cpf, telefone) VALUES (?, ?, ?)";
-
-        try (Connection conn = Conexao.getConnection();
-                PreparedStatement stmt = conn.PreparedStatement(sql)) {
-                    stmt.setString(1, paciente.getNome());
-                    stmt.setString(2, paciente.getCpf());
-                    stmt.setString(3, paciente.getTelefone());
-                    stmt.executeUpdate();
-
-                } catch (SQLException e) {
-                    System.out.println("Erro ao inserir paciente: " + e.getMessage());
-                }
+        pacientes.add(paciente);
     }
 
     public void atualizar(Paciente paciente) {
-        String sql = "UPDATE paciente SET nome = ?, cpf = ?, telefone = ?  WHERE id = ?";
-
-        try (Connection conn = Conexao.getConnection();
-                PreparedStatement stmt = conn.PreparedStatement(sql)) {
-
-                    stmt.setString(1, paciente.getNome());
-                    stmt.setString(2, paciente.getCpf());
-                    stmt.setString(3, paciente.getTelefone());
-                    stmt.setInt(4, paciente.getId());
-                    stmt.executeUpdate();
-
-                } catch (SQLException e) {
-                    System.out.println("Erro ao atualizar paciente: " + e.getMessage());
-                }
+        for (int i = 0; i < pacientes.size(); i++) {
+            if (pacientes.get(i).getId() == paciente.getId()) {
+                pacientes.set(i, paciente);
+                return;
+            }
+        }
     }
 
-    public void excluir(int id) {
-        String sql = "DELETE FROM paciente WHERE id = ?";
-
-        try (Connection conn = Conexao.getConnection();
-                PreparedStatement stmt = conn.PreparedStatement(sql)) {
-
-                    stmt.setInt(1, id);
-                    stmt.executeUpdate();
-
-                } catch (SQLException e) {
-                    System.out.println("Erro ao excluir paciente: " + e.getMessage());
-                }
+    public void deletar(int id) {
+        pacientes.removeIf(paciente -> paciente.getId() == id);
     }
 
     public List<Paciente> listarTodos() {
-        List<Paciente> lista = new ArrayList<>();
-        String sql = "SELECT * FROM paciente";
-
-        try (Connection conn = Conexao.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery()) {
-
-                    while (rs.next()) {
-                        Paciente p = new Paciente();
-                        p.setId(rs.getInt("id"));
-                        p.setNome(rs.getString("nome"));
-                        p.setCpf(rs.getString("cpf"));
-                        p.setTelefone(rs.getString("telefone"));
-                        lista.add(p);
-                    }
-
-                } catch (SQLException e) {
-                    System.out.println("Erro ao listar pacientes: " + e.getMessage());
-                }
-
-                return lista;
+        return new ArrayList<>(pacientes);
     }
 
     public Paciente buscarPorId(int id) {
-        String sql = "SELECT * FROM paciente WHERE id = ?";
-        Paciente p = null;
-
-        try (Connection conn = Conexao.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-                    stmt.setInt(1, id);
-                    ResultSet rs = stmt.executeQuery();
-
-                    if (rs.next()) {
-                        p = new Paciente();
-                        p.setId(rs.getInt("id"));
-                        p.setNome(rs.getString("nome"));
-                        p.setCpf(rs.getString("cpf"));
-                        p.setTelefone(rs.getString("telefone"));
-                    }
-
-                } catch (SQLException e) {
-                    System.out.println("Erro ao buscar paciente: " + e.getMessage());
-                }
-
-                return p;
+        return pacientes.stream()
+                .filter(paciente -> paciente.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 }

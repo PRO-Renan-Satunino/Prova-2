@@ -2,10 +2,10 @@ package view;
 
 import controller.ConsultaController;
 import controller.MedicoController;
-import controller.PacienteController;
 import model.Consulta;
 import model.Medico;
 import model.Paciente;
+import controller.PacienteController; 
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -138,7 +138,9 @@ public class ConsultaView extends JFrame {
     private void carregarCombos() {
         cbPaciente.removeAllItems();
         cbMedico.removeAllItems();
-        for (Paciente p : pacienteController.listarTodos()) cbPaciente.addItem(p);
+        for (Paciente p : pacienteController.listarTodos()) {
+            cbPaciente.addItem(p);
+        }
         for (Medico m : medicoController.listarTodos()) cbMedico.addItem(m);
     }
 

@@ -5,12 +5,13 @@ import model.Paciente;
 
 import java.util.List;
 
-/**
- * Controlador de paciente: conecta a view com o DAO.
- */
 public class PacienteController {
 
-    private PacienteDAO dao = new PacienteDAO();
+    private PacienteDAO dao;
+
+    public PacienteController() {
+        this.dao = new PacienteDAO(null);
+    }
 
     public void salvar(Paciente paciente) {
         if (paciente.getId() == 0) {

@@ -5,14 +5,14 @@ import java.time.LocalTime;
 
 public class Consulta {
     private int id;
-    private String paciente;
+    private Paciente paciente;
     private Medico medico;
     private LocalDate data;
     private LocalTime hora;
     private String observacao;
 
     // Constructors
-    public Consulta(int id, String paciente, Medico medico, LocalDate data, LocalTime hora, String observacao) {
+    public Consulta(int id, Paciente paciente, Medico medico, LocalDate data, LocalTime hora, String observacao) {
         this.id = id;
         this.paciente = paciente;
         this.medico = medico;
@@ -20,7 +20,7 @@ public class Consulta {
         this.hora = hora;
         this.observacao = observacao;
     }
-
+    
     // Getters e Setters
     public int getId() {
         return id;
@@ -30,11 +30,11 @@ public class Consulta {
         this.id = id;
     }
 
-    public String getPaciente() {
+    public Paciente getPaciente() {
         return paciente;
     }
 
-    public void setPaciente(String paciente) {
+    public void setPaciente(Paciente paciente) {
         this.paciente = paciente;
     }
 

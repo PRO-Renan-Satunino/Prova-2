@@ -1,72 +1,44 @@
 package dao;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import model.Medico;
 
-
+import java.util.ArrayList;
+import java.util.List;
 
 public class MedicoDAO {
 
-    private Connection connection;
+    private List<Medico> medicos = new ArrayList<>();
 
-    public MedicoDAO(Connection connection) {
-        this.connection = connection;
+    
+    public MedicoDAO(List<Medico> medicos) {
+        this.medicos = medicos;
     }
 
-    // Método para inserir um médico
-    public void inserirMedico(Medico medico) throws SQLException {
-        String sql = "INSERT INTO medico (nome, especialidade, crm) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, medico.getNome());
-            stmt.setString(2, medico.getEspecialidade());
-            stmt.setString(3, medico.getCrm());
-            stmt.executeUpdate();
-        }
+    public void inserir(Medico medico) {
+        medicos.add(medico);
     }
 
-    // Método para atualizar um médico
-    public void atualizarMedico(Medico medico) throws SQLException {
-        String sql = "UPDATE medico SET nome = ?, especialidade = ?, crm = ? WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, medico.getNome());
-            stmt.setString(2, medico.getEspecialidade());
-            stmt.setString(3, medico.getCrm());
-            stmt.setInt(4, medico.getId());
-            stmt.executeUpdate();
-        }
-    }
-
-    // Método para excluir um médico
-    public void excluirMedico(int id) throws SQLException {
-        String sql = "DELETE FROM medico WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-        }
-    }
-
-    // Método para buscar médicos por especialidade
-    public List<Medico> buscarMedicosPorEspecialidade(String especialidade) throws SQLException {
-        String sql = "SELECT * FROM medico WHERE especialidade = ?";
-        List<Medico> medicos = new ArrayList<>();
-
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-
-            stmt.setString(1, especialidade);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Medico medico = new Medico();
-                    medico.setId(rs.getInt("id"));
-                    medico.setNome(rs.getString("nome"));
-                    medico.setEspecialidade(rs.getString("especialidade"));
-                    medico.setCrm(rs.getString("crm"));
-                    medicos.add(medico);
-                }
+    public void atualizar(Medico medico) {
+        for (int i = 0; i < medicos.size(); i++) {
+            if (medicos.get(i).getId() == medico.getId()) {
+                medicos.set(i, medico);
+                return;
             }
         }
-        return medicos;
+    }
+
+    public void deletar(int id) {
+        medicos.removeIf(medico -> medico.getId() == id);
+    }
+
+    public List<Medico> listarTodos() {
+        return new ArrayList<>(medicos);
+    }
+
+    public Medico buscarPorId(int id) {
+        return medicos.stream()
+                .filter(medico -> medico.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 }

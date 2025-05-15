@@ -3,26 +3,21 @@ package dao;
 import model.Consulta;
 import model.Medico;
 import model.Paciente;
-import util.ConnectionFactory;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe responsável por operações CRUD da entidade Consulta no banco de dados.
+ * DAO responsável pelas operações CRUD da entidade Consulta.
  */
 public class ConsultaDAO {
-
-    private PacienteDAO pacienteDAO = new PacienteDAO();
-    private MedicoDAO medicoDAO = new MedicoDAO();
 
     public void inserir(Consulta consulta) {
         String sql = "INSERT INTO consulta (id_paciente, id_medico, data, hora, observacao) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection conn = ConnectionFactory.getConnection();
+        try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, consulta.getPaciente().getId());
@@ -30,6 +25,7 @@ public class ConsultaDAO {
             stmt.setDate(3, Date.valueOf(consulta.getData()));
             stmt.setTime(4, Time.valueOf(consulta.getHora()));
             stmt.setString(5, consulta.getObservacao());
+
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -40,7 +36,7 @@ public class ConsultaDAO {
     public void atualizar(Consulta consulta) {
         String sql = "UPDATE consulta SET id_paciente=?, id_medico=?, data=?, hora=?, observacao=? WHERE id=?";
 
-        try (Connection conn = ConnectionFactory.getConnection();
+        try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, consulta.getPaciente().getId());
@@ -49,6 +45,7 @@ public class ConsultaDAO {
             stmt.setTime(4, Time.valueOf(consulta.getHora()));
             stmt.setString(5, consulta.getObservacao());
             stmt.setInt(6, consulta.getId());
+
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -59,7 +56,7 @@ public class ConsultaDAO {
     public void deletar(int id) {
         String sql = "DELETE FROM consulta WHERE id=?";
 
-        try (Connection conn = ConnectionFactory.getConnection();
+        try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -72,26 +69,49 @@ public class ConsultaDAO {
 
     public List<Consulta> listarTodas() {
         List<Consulta> lista = new ArrayList<>();
-        String sql = "SELECT * FROM consulta";
 
-        try (Connection conn = ConnectionFactory.getConnection();
+        String sql = """
+            SELECT c.id, c.data, c.hora, c.observacao,
+                   p.id as id_paciente, p.nome as nome_paciente, p.cpf, p.telefone,
+                   m.id as id_medico, m.nome as nome_medico, m.especialidade, m.crm
+            FROM consulta c
+            JOIN paciente p ON c.id_paciente = p.id
+            JOIN medico m ON c.id_medico = m.id
+            ORDER BY c.data, c.hora
+        """;
+
+        try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Consulta c = new Consulta();
-                c.setId(rs.getInt("id"));
+                // Paciente
+                Paciente paciente = new Paciente(
+                        rs.getInt("id_paciente"),
+                        rs.getString("nome_paciente"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone")
+                );
 
-                Paciente p = pacienteDAO.buscarPorId(rs.getInt("id_paciente"));
-                Medico m = medicoDAO.buscarPorId(rs.getInt("id_medico"));
+                // Médico
+                Medico medico = new Medico(
+                        rs.getInt("id_medico"),
+                        rs.getString("nome_medico"),
+                        rs.getString("especialidade"),
+                        rs.getString("crm")
+                );
 
-                c.setPaciente(p);
-                c.setMedico(m);
-                c.setData(rs.getDate("data").toLocalDate());
-                c.setHora(rs.getTime("hora").toLocalTime());
-                c.setObservacao(rs.getString("observacao"));
+                // Consulta
+                Consulta consulta = new Consulta(
+                        rs.getInt("id"),
+                        paciente,
+                        medico,
+                        rs.getDate("data").toLocalDate(),
+                        rs.getTime("hora").toLocalTime(),
+                        rs.getString("observacao")
+                );
 
-                lista.add(c);
+                lista.add(consulta);
             }
 
         } catch (SQLException e) {
@@ -103,34 +123,53 @@ public class ConsultaDAO {
 
     public List<Consulta> buscarPorData(LocalDate data) {
         List<Consulta> lista = new ArrayList<>();
-        String sql = "SELECT * FROM consulta WHERE data = ?";
 
-        try (Connection conn = ConnectionFactory.getConnection();
+        String sql = """
+            SELECT c.id, c.data, c.hora, c.observacao,
+                   p.id as id_paciente, p.nome as nome_paciente, p.cpf, p.telefone,
+                   m.id as id_medico, m.nome as nome_medico, m.especialidade, m.crm
+            FROM consulta c
+            JOIN paciente p ON c.id_paciente = p.id
+            JOIN medico m ON c.id_medico = m.id
+            WHERE c.data = ?
+            ORDER BY c.hora
+        """;
+
+        try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setDate(1, Date.valueOf(data));
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Consulta c = new Consulta();
-                c.setId(rs.getInt("id"));
+                Paciente paciente = new Paciente(
+                        rs.getInt("id_paciente"),
+                        rs.getString("nome_paciente"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone")
+                );
 
-                Paciente p = pacienteDAO.buscarPorId(rs.getInt("id_paciente"));
-                Medico m = medicoDAO.buscarPorId(rs.getInt("id_medico"));
+                Medico medico = new Medico(
+                        rs.getInt("id_medico"),
+                        rs.getString("nome_medico"),
+                        rs.getString("especialidade"),
+                        rs.getString("crm")
+                );
 
-                c.setPaciente(p);
-                c.setMedico(m);
-                c.setData(rs.getDate("data").toLocalDate());
-                c.setHora(rs.getTime("hora").toLocalTime());
-                c.setObservacao(rs.getString("observacao"));
+                Consulta consulta = new Consulta(
+                        rs.getInt("id"),
+                        paciente,
+                        medico,
+                        rs.getDate("data").toLocalDate(),
+                        rs.getTime("hora").toLocalTime(),
+                        rs.getString("observacao")
+                );
 
-                lista.add(c);
+                lista.add(consulta);
             }
 
-            rs.close();
-
         } catch (SQLException e) {
-            System.out.println("Erro ao buscar consultas por data: " + e.getMessage());
+            System.out.println("Erro ao buscar por data: " + e.getMessage());
         }
 
         return lista;
@@ -138,38 +177,53 @@ public class ConsultaDAO {
 
     public List<Consulta> buscarPorNomePaciente(String nome) {
         List<Consulta> lista = new ArrayList<>();
+
         String sql = """
-            SELECT c.* FROM consulta c
+            SELECT c.id, c.data, c.hora, c.observacao,
+                   p.id as id_paciente, p.nome as nome_paciente, p.cpf, p.telefone,
+                   m.id as id_medico, m.nome as nome_medico, m.especialidade, m.crm
+            FROM consulta c
             JOIN paciente p ON c.id_paciente = p.id
+            JOIN medico m ON c.id_medico = m.id
             WHERE p.nome LIKE ?
+            ORDER BY c.data, c.hora
         """;
 
-        try (Connection conn = ConnectionFactory.getConnection();
+        try (Connection conn = Conexao.conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, "%" + nome + "%");
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Consulta c = new Consulta();
-                c.setId(rs.getInt("id"));
+                Paciente paciente = new Paciente(
+                        rs.getInt("id_paciente"),
+                        rs.getString("nome_paciente"),
+                        rs.getString("cpf"),
+                        rs.getString("telefone")
+                );
 
-                Paciente p = pacienteDAO.buscarPorId(rs.getInt("id_paciente"));
-                Medico m = medicoDAO.buscarPorId(rs.getInt("id_medico"));
+                Medico medico = new Medico(
+                        rs.getInt("id_medico"),
+                        rs.getString("nome_medico"),
+                        rs.getString("especialidade"),
+                        rs.getString("crm")
+                );
 
-                c.setPaciente(p);
-                c.setMedico(m);
-                c.setData(rs.getDate("data").toLocalDate());
-                c.setHora(rs.getTime("hora").toLocalTime());
-                c.setObservacao(rs.getString("observacao"));
+                Consulta consulta = new Consulta(
+                        rs.getInt("id"),
+                        paciente,
+                        medico,
+                        rs.getDate("data").toLocalDate(),
+                        rs.getTime("hora").toLocalTime(),
+                        rs.getString("observacao")
+                );
 
-                lista.add(c);
+                lista.add(consulta);
             }
 
-            rs.close();
-
         } catch (SQLException e) {
-            System.out.println("Erro ao buscar consultas por nome do paciente: " + e.getMessage());
+            System.out.println("Erro ao buscar por nome do paciente: " + e.getMessage());
         }
 
         return lista;

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class MedicoController {
 
-    private MedicoDAO dao = new MedicoDAO();
+    private MedicoDAO dao = new MedicoDAO(null);
 
     public void salvar(Medico medico) {
         if (medico.getId() == 0) {
