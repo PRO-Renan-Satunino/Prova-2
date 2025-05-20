@@ -87,6 +87,11 @@ public class ConsultaView extends JFrame {
         carregarConsultas();
     }
 
+    /**
+     * Salva ou atualiza uma consulta.
+     * Valida os campos, cria um objeto Consulta e chama o controller para salvar.
+     * Após salvar, limpa os campos e atualiza a tabela.
+     */
     private void salvar() {
         try {
             LocalDate data = LocalDate.parse(txtData.getText().trim());
@@ -110,6 +115,11 @@ public class ConsultaView extends JFrame {
         }
     }
 
+    /**
+     * Exclui a consulta selecionada.
+     * Solicita confirmação do usuário antes de excluir.
+     * Após excluir, limpa os campos e atualiza a tabela.
+     */
     private void excluir() {
         if (consultaSelecionada == 0) {
             JOptionPane.showMessageDialog(this, "Selecione uma consulta para excluir.");
@@ -124,6 +134,10 @@ public class ConsultaView extends JFrame {
         }
     }
 
+    /**
+     * Carrega todas as consultas cadastradas na tabela.
+     * Limpa a tabela e adiciona cada consulta como uma nova linha.
+     */
     private void carregarConsultas() {
         modelo.setRowCount(0);
         List<Consulta> lista = controller.listarTodas();
@@ -135,6 +149,10 @@ public class ConsultaView extends JFrame {
         }
     }
 
+    /**
+     * Carrega os pacientes e médicos nos combos de seleção.
+     * Limpa os combos e adiciona todos os pacientes e médicos cadastrados.
+     */
     private void carregarCombos() {
         cbPaciente.removeAllItems();
         cbMedico.removeAllItems();
@@ -144,6 +162,9 @@ public class ConsultaView extends JFrame {
         for (Medico m : medicoController.listarTodos()) cbMedico.addItem(m);
     }
 
+    /**
+     * Limpa os campos do formulário e reseta a seleção da tabela e dos combos.
+     */
     private void limparCampos() {
         consultaSelecionada = 0;
         txtData.setText("");
