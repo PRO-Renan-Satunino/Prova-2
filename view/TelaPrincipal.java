@@ -20,9 +20,9 @@ public class TelaPrincipal extends JFrame {
         JButton btnConsulta = new JButton("Consultas");
 
         // Ações
-        btnPaciente.addActionListener(e -> new PacienteView().setVisible(true));
-        btnMedico.addActionListener(e -> new MedicoView().setVisible(true));
-        btnConsulta.addActionListener(e -> new ConsultaView().setVisible(true));
+        btnPaciente.addActionListener(_ -> new PacienteView().setVisible(true));
+        btnMedico.addActionListener(_ -> new MedicoView().setVisible(true));
+        btnConsulta.addActionListener(_ -> new ConsultaView().setVisible(true));
 
         // Layout
         JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));
