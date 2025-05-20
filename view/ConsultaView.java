@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class ConsultaView extends JFrame {
 
-    private JComboBox<Paciente> cbPaciente = new JComboBox<>();
-    private JComboBox<Medico> cbMedico = new JComboBox<>();
+    private JComboBox<Paciente> cbPaciente = new JComboBox<>(new DefaultComboBoxModel<>());
+    private JComboBox<Medico> cbMedico = new JComboBox<>(new DefaultComboBoxModel<>());
     private JTextField txtData = new JTextField("2025-01-01");
     private JTextField txtHora = new JTextField("14:00");
     private JTextField txtObs = new JTextField();
@@ -68,8 +68,8 @@ public class ConsultaView extends JFrame {
         add(form, BorderLayout.NORTH);
         add(scroll, BorderLayout.CENTER);
 
-        btnSalvar.addActionListener(e -> salvar());
-        btnExcluir.addActionListener(e -> excluir());
+        btnSalvar.addActionListener(_ -> salvar());
+        btnExcluir.addActionListener(_ -> excluir());
 
         tabela.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && tabela.getSelectedRow() != -1) {
@@ -153,14 +153,28 @@ public class ConsultaView extends JFrame {
      * Carrega os pacientes e médicos nos combos de seleção.
      * Limpa os combos e adiciona todos os pacientes e médicos cadastrados.
      */
-    private void carregarCombos() {
-        cbPaciente.removeAllItems();
-        cbMedico.removeAllItems();
-        for (Paciente p : pacienteController.listarTodos()) {
+   private void carregarCombos() {
+    cbPaciente.removeAllItems();
+    cbMedico.removeAllItems();
+
+    List<Paciente> pacientes = pacienteController.listarTodos();
+    if (pacientes != null) {
+        for (Paciente p : pacientes) {
             cbPaciente.addItem(p);
         }
-        for (Medico m : medicoController.listarTodos()) cbMedico.addItem(m);
     }
+
+    List<Medico> medicos = medicoController.listarTodos();
+    if (medicos != null) {
+        for (Medico m : medicos) {
+            cbMedico.addItem(m);
+        }
+    }
+
+    cbPaciente.setSelectedIndex(-1);
+    cbMedico.setSelectedIndex(-1);
+}
+
 
     /**
      * Limpa os campos do formulário e reseta a seleção da tabela e dos combos.

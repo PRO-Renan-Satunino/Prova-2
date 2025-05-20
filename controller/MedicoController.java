@@ -7,7 +7,9 @@ import java.util.List;
 
 public class MedicoController {
 
-    private MedicoDAO dao = new MedicoDAO(null);
+   private MedicoDAO dao = new MedicoDAO();
+
+
 
     // Salva um médico: insere se for novo (id=0), ou atualiza se já existir
     public void salvar(Medico medico) {

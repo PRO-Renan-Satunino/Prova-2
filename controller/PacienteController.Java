@@ -7,12 +7,9 @@ import java.util.List;
 
 public class PacienteController {
 
-    private PacienteDAO dao;
-
     // Construtor: inicializa o DAO de Paciente
-    public PacienteController() {
-        this.dao = new PacienteDAO(null);
-    }
+    private PacienteDAO dao = new PacienteDAO();
+
 
     // Salva um paciente: insere se for novo (id=0), ou atualiza se já existir
     public void salvar(Paciente paciente) {

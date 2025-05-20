@@ -1,17 +1,18 @@
 package dao;
 
 import model.Medico;
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO em memória para médicos.
+ */
 public class MedicoDAO {
 
-    private List<Medico> medicos = new ArrayList<>();
+    private List<Medico> medicos;
 
-    
-    public MedicoDAO(List<Medico> medicos) {
-        this.medicos = medicos;
+    public MedicoDAO() {
+        this.medicos = new ArrayList<>(); // inicializado para evitar null
     }
 
     public void inserir(Medico medico) {
@@ -32,7 +33,7 @@ public class MedicoDAO {
     }
 
     public List<Medico> listarTodos() {
-        return new ArrayList<>(medicos);
+        return new ArrayList<>(medicos); // sempre retorna lista válida
     }
 
     public Medico buscarPorId(int id) {

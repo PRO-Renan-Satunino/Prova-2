@@ -57,9 +57,9 @@ public class PacienteView extends JFrame {
         add(scroll, BorderLayout.CENTER); // Adiciona a tabela no centro
 
         // Ação do botão Salvar: chama o método salvar()
-        btnSalvar.addActionListener(e -> salvar());
+        btnSalvar.addActionListener(_ -> salvar());
         // Ação do botão Excluir: chama o método excluir()
-        btnExcluir.addActionListener(e -> excluir());
+        btnExcluir.addActionListener(_ -> excluir());
 
         // Seleção de linha na tabela: preenche os campos com os dados do paciente selecionado
         tabela.getSelectionModel().addListSelectionListener(e -> {

@@ -1,16 +1,18 @@
 package dao;
 
 import model.Paciente;
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO em memória que simula um banco de dados para testes.
+ */
 public class PacienteDAO {
 
-    private List<Paciente> pacientes = new ArrayList<>();
+    private List<Paciente> pacientes;
 
-    public PacienteDAO(List<Paciente> pacientes) {
-        this.pacientes = pacientes;
+    public PacienteDAO() {
+        this.pacientes = new ArrayList<>(); // nunca é null
     }
 
     public void inserir(Paciente paciente) {
@@ -31,7 +33,7 @@ public class PacienteDAO {
     }
 
     public List<Paciente> listarTodos() {
-        return new ArrayList<>(pacientes);
+        return new ArrayList<>(pacientes); // sempre seguro
     }
 
     public Paciente buscarPorId(int id) {
