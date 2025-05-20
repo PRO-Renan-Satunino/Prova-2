@@ -2,7 +2,6 @@ package dao;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.beans.Statement;
 import java.sql.Connection;
 
 public class Conexao {

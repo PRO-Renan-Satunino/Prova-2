@@ -9,10 +9,12 @@ public class PacienteController {
 
     private PacienteDAO dao;
 
+    // Construtor: inicializa o DAO de Paciente
     public PacienteController() {
         this.dao = new PacienteDAO(null);
     }
 
+    // Salva um paciente: insere se for novo (id=0), ou atualiza se já existir
     public void salvar(Paciente paciente) {
         if (paciente.getId() == 0) {
             dao.inserir(paciente);
@@ -21,14 +23,17 @@ public class PacienteController {
         }
     }
 
+    // Exclui um paciente pelo id
     public void excluir(int id) {
         dao.deletar(id);
     }
 
+    // Retorna uma lista com todos os pacientes cadastrados
     public List<Paciente> listarTodos() {
         return dao.listarTodos();
     }
 
+    // Busca um paciente pelo id
     public Paciente buscarPorId(int id) {
         return dao.buscarPorId(id);
     }
